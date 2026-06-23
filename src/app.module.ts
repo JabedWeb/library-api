@@ -7,6 +7,7 @@ import { StudentsModule } from './students/students.module';
 import { OrdersModule } from './orders/orders.module';
 import { PdfModule } from './pdf/pdf.module';
 import { MailModule } from './mail/mail.module';
+import { StudentProfilesModule } from './student-profiles/student-profiles.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MailModule } from './mail/mail.module';
     OrdersModule,
     PdfModule,
     MailModule,
+    StudentProfilesModule,
   ],
   controllers: [],
   providers: [],

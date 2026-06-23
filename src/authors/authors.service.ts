@@ -56,7 +56,7 @@ export class AuthorsService {
       include: {
         books: {
           include: {
-            category: true,
+            categories: true,
           },
         },
       },

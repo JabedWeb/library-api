@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class CreateBookDto {
   @ApiProperty({
@@ -31,8 +39,10 @@ export class CreateBookDto {
   authorId!: number;
 
   @ApiProperty({
-    example: 1,
+    example: [1, 2],
   })
-  @IsInt()
-  categoryId!: number;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })
+  categoryIds!: number[];
 }

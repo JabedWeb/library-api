@@ -8,8 +8,22 @@ export class BooksService {
   constructor(private prisma: PrismaService) {}
 
   create(createBookDto: CreateBookDto) {
+    const { categoryIds, ...bookData } = createBookDto;
+
     return this.prisma.book.create({
-      data: createBookDto,
+      data: {
+        ...bookData,
+        categories: {
+          connect: categoryIds.map((id) => ({
+            id,
+          })),
+        },
+      },
+
+      include: {
+        author: true,
+        categories: true,
+      },
     });
   }
 
@@ -32,11 +46,13 @@ export class BooksService {
             }
           : undefined,
 
-        category: category
+        categories: category
           ? {
-              name: {
-                contains: category,
-                mode: 'insensitive',
+              some: {
+                name: {
+                  contains: category,
+                  mode: 'insensitive',
+                },
               },
             }
           : undefined,
@@ -44,7 +60,7 @@ export class BooksService {
 
       include: {
         author: true,
-        category: true,
+        categories: true,
       },
 
       orderBy: {
@@ -58,7 +74,7 @@ export class BooksService {
       where: { id },
       include: {
         author: true,
-        category: true,
+        categories: true,
       },
     });
 
@@ -72,9 +88,27 @@ export class BooksService {
   async update(id: number, updateBookDto: UpdateBookDto) {
     await this.findOne(id);
 
+    const { categoryIds, ...bookData } = updateBookDto;
+
     return this.prisma.book.update({
       where: { id },
-      data: updateBookDto,
+
+      data: {
+        ...bookData,
+
+        categories: categoryIds
+          ? {
+              set: categoryIds.map((id) => ({
+                id,
+              })),
+            }
+          : undefined,
+      },
+
+      include: {
+        author: true,
+        categories: true,
+      },
     });
   }
 
@@ -90,7 +124,7 @@ export class BooksService {
       where: { id },
       include: {
         author: true,
-        category: true,
+        categories: true,
         orders: {
           include: {
             student: true,
@@ -113,7 +147,7 @@ export class BooksService {
         isbn: book.isbn,
         stock: book.stock,
         author: book.author.name,
-        category: book.category.name,
+        categories: book.categories.map((category) => category.name),
       },
 
       totalBorrowed: book.orders.length,

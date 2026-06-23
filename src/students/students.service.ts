@@ -32,6 +32,14 @@ export class StudentsService {
             }
           : undefined,
       },
+      include: {
+        profile: true,
+        orders: {
+          include: {
+            book: true,
+          },
+        },
+      },
 
       orderBy: {
         id: 'desc',
@@ -42,6 +50,14 @@ export class StudentsService {
   async findOne(id: number) {
     const student = await this.prisma.student.findUnique({
       where: { id },
+      include: {
+        profile: true,
+        orders: {
+          include: {
+            book: true,
+          },
+        },
+      },
     });
 
     if (!student) {
