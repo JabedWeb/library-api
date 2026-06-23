@@ -8,6 +8,8 @@ import { OrdersModule } from './orders/orders.module';
 import { PdfModule } from './pdf/pdf.module';
 import { MailModule } from './mail/mail.module';
 import { StudentProfilesModule } from './student-profiles/student-profiles.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { StudentProfilesModule } from './student-profiles/student-profiles.modul
     PdfModule,
     MailModule,
     StudentProfilesModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
