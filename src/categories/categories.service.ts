@@ -18,12 +18,18 @@ export class CategoriesService {
       orderBy: {
         id: 'desc',
       },
+      include: {
+        books: true,
+      },
     });
   }
 
   async findOne(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id },
+      include: {
+        books: true,
+      },
     });
 
     if (!category) {
