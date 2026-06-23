@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Author {
+  id        Int      @id @default(autoincrement())
+  name      String
+  bio       String?
+  photoUrl  String?
+  books     Book[]
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  books     Book[]
+  createdAt DateTime @default(now())
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  title       String
+  isbn        String?   @unique
+  stock       Int       @default(0)
+  imageUrl    String?
+
+  authorId    Int
+  author      Author    @relation(fields: [authorId], references: [id])
+
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  orders      Order[]
+
+  createdAt   DateTime  @default(now())
+}
+
+model Student {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?  @unique
+  photoUrl  String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  BORROWED
+  RETURNED
+  OVERDUE
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+
+  studentId   Int
+  student     Student     @relation(fields: [studentId], references: [id])
+
+  bookId      Int
+  book        Book        @relation(fields: [bookId], references: [id])
+
+  status      OrderStatus @default(BORROWED)
+
+  orderDate   DateTime    @default(now())
+  dueDate     DateTime
+  returnDate  DateTime?
+  pdfPath     String?
+
+  createdAt   DateTime    @default(now())
+}
