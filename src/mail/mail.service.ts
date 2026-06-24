@@ -26,7 +26,7 @@ export class MailService {
     pdfPath: string,
   ) {
     return this.transporter.sendMail({
-      from: 'library@pixelvega.com',
+      from: process.env.MAIL_USER,
       to: studentEmail,
       subject: 'Book Borrow Confirmation',
 
