@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+  <h2>Library Book Borrow Confirmation</h2>
+
+  <p>Hello {{studentName}},</p>
+
+  <p>Your borrowing request has been approved.</p>
+
+  <table border="1" cellpadding="8">
+    <tr>
+      <td><strong>Order ID</strong></td>
+      <td>{{orderId}}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Book</strong></td>
+      <td>{{bookTitle}}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Status</strong></td>
+      <td>{{status}}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Borrow Date</strong></td>
+      <td>{{borrowDate}}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Due Date</strong></td>
+      <td>{{dueDate}}</td>
+    </tr>
+  </table>
+
+  <br>
+
+  <p>Please find the PDF receipt attached.</p>
+
+  <p>Thank you.</p>
+</body>
+</html>

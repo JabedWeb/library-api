@@ -91,9 +91,10 @@ export class OrdersService {
       const pdf = await this.pdfService.generateOrderPdf(order);
       const fileName = `order-${order.id}.pdf`;
       const relativePdfPath = `/uploads/orders/${fileName}`;
+      const pdfAbsolutePath = join(this.orderPdfDirectory, fileName);
 
       await mkdir(this.orderPdfDirectory, { recursive: true });
-      await writeFile(join(this.orderPdfDirectory, fileName), pdf);
+      await writeFile(join(pdfAbsolutePath), pdf);
 
       await this.prisma.$executeRaw`
         UPDATE "Order"
@@ -107,10 +108,14 @@ export class OrdersService {
       };
 
       await this.mailService.sendOrderEmail(
-        persistedOrder.student.email,
-        persistedOrder.student.name,
-        persistedOrder.book.title,
-        join(process.cwd(), relativePdfPath.replace(/^\//, '')),
+        order.student.email,
+        order.student.name,
+        order.book.title,
+        order.id,
+        order.status,
+        order.orderDate.toDateString(),
+        order.dueDate.toDateString(),
+        pdfAbsolutePath,
       );
     } catch (error) {
       this.logger.error(
