@@ -13,8 +13,17 @@ export class AuthorsService {
     });
   }
 
-  findAll() {
+  findAll(search?: string) {
     return this.prisma.author.findMany({
+      where: search
+        ? {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          }
+        : undefined,
+
       orderBy: {
         id: 'desc',
       },

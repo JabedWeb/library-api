@@ -7,7 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -39,13 +39,16 @@ export class AuthorsController {
   }
 
   @Get()
-  @Roles('ADMIN')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('ADMIN')
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({
     summary: 'Get all authors',
   })
-  findAll() {
-    return this.authorsService.findAll();
+  findAll(
+    @Query('search')
+    search?: string,
+  ) {
+    return this.authorsService.findAll(search);
   }
 
   @Get(':id/books')
