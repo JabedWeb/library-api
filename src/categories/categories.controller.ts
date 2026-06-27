@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -38,8 +39,26 @@ export class CategoriesController {
   @ApiOperation({
     summary: 'Get all categories',
   })
-  findAll() {
-    return this.categoriesService.findAll();
+  @Get()
+  @ApiOperation({
+    summary: 'Get all categories',
+  })
+  findAll(
+    @Query('search')
+    search?: string,
+  ) {
+    return this.categoriesService.findAll(search);
+  }
+
+  @Get(':id/books')
+  @ApiOperation({
+    summary: 'Get all books by category',
+  })
+  getBooks(
+    @Param('id', ParseIntPipe)
+    id: number,
+  ) {
+    return this.categoriesService.getBooks(id);
   }
 
   @Get(':id')

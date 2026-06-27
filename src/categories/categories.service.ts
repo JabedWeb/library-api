@@ -13,15 +13,49 @@ export class CategoriesService {
     });
   }
 
-  findAll() {
+  findAll(search?: string) {
     return this.prisma.category.findMany({
-      orderBy: {
-        id: 'desc',
-      },
+      where: search
+        ? {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          }
+        : undefined,
+
       include: {
         books: true,
       },
+
+      orderBy: {
+        id: 'desc',
+      },
     });
+  }
+
+  async getBooks(id: number) {
+    const category = await this.prisma.category.findUnique({
+      where: { id },
+
+      include: {
+        books: {
+          include: {
+            author: true,
+          },
+
+          orderBy: {
+            id: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
+    }
+
+    return category;
   }
 
   async findOne(id: number) {
