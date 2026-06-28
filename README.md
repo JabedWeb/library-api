@@ -1,99 +1,193 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# library-api
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Library API is a NestJS + Prisma backend for managing a library workflow. It covers authentication, authors, categories, books, students, student profiles, borrowing orders, PDF receipts, and email notifications.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview
 
-## Description
+- Framework: NestJS 11
+- Database: PostgreSQL through Prisma
+- Auth: JWT with role-based access control
+- Docs: Swagger UI and a detailed HTTP reference
+- File serving: static `/uploads` assets for generated PDFs and media
+- Side effects: order confirmation emails and PDF generation
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Quick Access
 
-## Project setup
+- API reference: [docs/api.md](docs/api.md)
+- Swagger UI: `http://localhost:3333/api`
+- Base URL: `http://localhost:3333`
+
+## Features
+
+- Register and log in users with JWT authentication
+- Protect routes with bearer tokens and role guards
+- Manage authors, categories, books, students, and student profiles
+- Create, update, return, list, and delete borrowing orders
+- Generate PDF copies for orders and download them from the API
+- Send order confirmation emails with the generated PDF attached
+- Serve generated files from the `uploads/` directory
+
+## Project Structure
+
+- `src/auth` - registration, login, JWT strategy, and guards
+- `src/authors` - author CRUD and author-book lookups
+- `src/books` - book CRUD and book summaries
+- `src/categories` - category CRUD and category-book lookups
+- `src/students` - student CRUD and borrowing summaries
+- `src/student-profiles` - profile CRUD for student details
+- `src/orders` - borrowing workflow, PDF download, and order lifecycle
+- `src/pdf` - PDF generation service
+- `src/mail` - email delivery and templates
+- `src/prisma` - Prisma client wrapper and database connection lifecycle
+- `prisma/schema.prisma` - database models and enums
+- `docs/api.md` - endpoint-by-endpoint reference with sample payloads
+
+## Data Model
+
+The main database entities are:
+
+- `Author`
+- `Category`
+- `Book`
+- `Student`
+- `StudentProfile`
+- `Order`
+- `User`
+
+Key enums:
+
+- `OrderStatus`: `BORROWED`, `RETURNED`, `OVERDUE`
+- `UserRole`: `ADMIN`, `LIBRARIAN`
+
+## Requirements
+
+- Node.js 18 or newer
+- npm
+- PostgreSQL database
+- SMTP credentials for mail delivery
+
+## Environment Variables
+
+Create a `.env` file in the project root with these values:
 
 ```bash
-$ npm install
+DATABASE_URL=
+JWT_SECRET=
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=
+MAIL_PASS=
 ```
 
-## Compile and run the project
+Notes:
+
+- `MAIL_SECURE` is optional. If it is omitted, the app uses `false` on port `587` and `true` on port `465`.
+- `DATABASE_URL` is required for Prisma to connect to Postgres.
+- `JWT_SECRET` is required for login and protected routes.
+
+## Install
+
+```bash
+npm install
+```
+
+## Database Setup
+
+Run Prisma migrations after configuring `DATABASE_URL`:
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+If you need to inspect or edit the schema, start with `prisma/schema.prisma`.
+
+## Run Locally
 
 ```bash
 # development
-$ npm run start
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
+# development without watch
+npm run start
 
-# production mode
-$ npm run start:prod
+# production
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+The server listens on port `3333`.
+
+## Scripts
+
+- `npm run build` - compile the NestJS app
+- `npm run start` - run once in development mode
+- `npm run start:dev` - run with watch mode
+- `npm run start:debug` - run with the Node inspector
+- `npm run start:prod` - run the compiled app from `dist/`
+- `npm run lint` - lint and auto-fix TypeScript files
+- `npm run format` - format source and test files with Prettier
+- `npm run test` - run unit tests
+- `npm run test:watch` - run tests in watch mode
+- `npm run test:cov` - run tests with coverage
+- `npm run test:e2e` - run end-to-end tests
+
+## Authentication
+
+Authentication uses bearer tokens returned by `POST /auth/login`.
+
+```http
+Authorization: Bearer <access_token>
+```
+
+Roles are enforced where needed. The auth module uses a 1-day JWT expiry.
+
+## API Summary
+
+For full request and response examples, use [docs/api.md](docs/api.md) or the Swagger UI.
+
+- Auth: register, login, profile
+- Authors: create, list, fetch, update, delete
+- Categories: create, list, fetch, update, delete
+- Books: create, list, search, fetch, update, delete, summary
+- Students: create, list, search, fetch, update, delete, summary
+- Student profiles: create, list, fetch, update, delete
+- Orders: create borrowing orders, list, fetch, update, delete, download PDF
+
+## Runtime Behavior
+
+- Global validation is enabled with whitelist + transform, so extra request fields are stripped.
+- Swagger is mounted at `/api`.
+- Static files in `uploads/` are served from `/uploads`.
+- CORS is enabled for all origins.
+- Order creation sends confirmation email and generates PDFs.
+
+## Uploads
+
+Generated or uploaded files are stored under:
+
+- `uploads/authors`
+- `uploads/books`
+- `uploads/orders`
+
+These files are served by the application and can be downloaded directly when present.
+
+## Testing
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run test
+npm run test:e2e
+npm run test:cov
 ```
 
-## Deployment
+## Troubleshooting
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- If Prisma cannot connect, verify `DATABASE_URL` and that the database is reachable.
+- If login fails, confirm `JWT_SECRET` is set and matches the running environment.
+- If email delivery fails, verify `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS`, and `MAIL_SECURE`.
+- If PDF downloads are missing, check that the relevant file exists in `uploads/orders`.
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-# library-api
+This project is currently marked as `UNLICENSED` in `package.json`.
